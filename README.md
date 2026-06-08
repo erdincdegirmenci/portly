@@ -23,9 +23,9 @@ Sistemdeki aktif TCP portlarını gerçek zamanlı listeleyen, gerektiğinde tek
 
 ### Hazır `.exe` ile (Önerilen)
 
-1. [Releases](https://github.com/erdincdegirmenci/portly/releases) sayfasına git
-2. En son sürümden `portly_x.x.x_x64-setup.exe` dosyasını indir
-3. Çalıştır → UAC onayı ver → kurulum tamamlanır
+1. GitHub Releases sayfasına git  
+2. En son sürümden `portly_x.x.x_x64-setup.exe` dosyasını indir  
+3. Çalıştır → UAC onayı ver → kurulum tamamlanır  
 
 > ⚠️ Tüm sistem portlarını görmek için uygulamayı **Run as Administrator** ile çalıştır.
 
@@ -35,67 +35,81 @@ Sistemdeki aktif TCP portlarını gerçek zamanlı listeleyen, gerektiğinde tek
 
 #### Gereksinimler
 
-node --version rustup --version
-
+node --version  
+rustup --version  
 
 Eksikse kur:
 
-winget install OpenJS.NodeJS winget install Rustlang.Rustup
-
-#### Build Al ve Kur
-git clone https://github.com/erdincdegirmenci/portly.git cd portly npm install npm run tauri build
-
-Build tamamlandıktan sonra:
-
-Installer
-.\src-tauri\target\release\bundle\nsis\portly_0.1.0_x64-setup.exe
-MSI
-.\src-tauri\target\release\bundle\msi\portly_0.1.0_x64_en-US.msi
-
-.\src-tauri\target\release\portly.exe
-
-> İlk build ~10 dakika sürebilir.
+winget install OpenJS.NodeJS  
+winget install Rustlang.Rustup  
 
 ---
 
-### Geliştirici Ortamı
+### Build Al ve Kur
 
-git clone https://github.com/erdincdegirmenci/portly.git cd portly npm install npm run tauri dev
+git clone https://github.com/erdincdegirmenci/portly.git  
+cd portly  
+npm install  
+npm run tauri build  
+
+---
+
+### Çıktılar
+
+NSIS Installer:
+src-tauri/target/release/bundle/nsis/portly_0.1.0_x64-setup.exe  
+
+MSI:
+src-tauri/target/release/bundle/msi/portly_0.1.0_x64_en-US.msi  
+
+Executable:
+src-tauri/target/release/portly.exe  
+
+---
+
+### Geliştirici Modu
+
+git clone https://github.com/erdincdegirmenci/portly.git  
+cd portly  
+npm install  
+npm run tauri dev  
 
 ---
 
 ## Kullanım
 
-| Eylem | Nasıl |
-|---|---|
+| Eylem | Açıklama |
+|------|----------|
 | Uygulamayı aç / gizle | Tray ikonuna sol tıkla |
-| Port ara | Arama kutusuna port no, process adı veya dizin yaz |
-| Process sonlandır | **[✕]** butonuna tıkla → onayla |
-| Terminalde aç | **[>_]** butonuna tıkla |
-| Klasörde aç | **[📁]** butonuna tıkla |
-| Yenileme aralığı | Options → 3s / 5s / 10s / 30s |
+| Port ara | Port no / process adı / dizin yaz |
+| Process sonlandır | ✕ butonuna tıkla |
+| Terminal aç | >_ butonu |
+| Klasör aç | 📁 butonu |
+| Yenileme | 3s / 5s / 10s / 30s |
 
 ---
 
 ## Sistem Gereksinimleri
 
-| | |
-|---|---|
-| **İşletim Sistemi** | Windows 10 / 11 (x64) |
-| **WebView2 Runtime** | Windows 11'de önceden yüklü — Windows 10 için [buradan indir](https://developer.microsoft.com/en-us/microsoft-edge/webview2/) |
-| **Tam erişim** | Administrator yetkisi önerilir |
+| Gereksinim | Detay |
+|------|--------|
+| OS | Windows 10 / 11 (x64) |
+| WebView2 | Windows 11’de hazır, Windows 10 için kurulum gerekir |
+| Yetki | Administrator önerilir |
+
+WebView2: https://developer.microsoft.com/en-us/microsoft-edge/webview2/
 
 ---
 
 ## Sorun Giderme
 
 | Sorun | Çözüm |
-|---|---|
-| Bazı portlar görünmüyor | Sağ tık → **Run as Administrator** |
-| Uygulama görev çubuğunda yok | Sistem tepsisine bak (saat yanı) |
-| Kill sonrası port hâlâ görünüyor | **[↺]** refresh butonuna bas |
-| WebView2 hatası | [WebView2 Runtime](https://developer.microsoft.com/en-us/microsoft-edge/webview2/)'ı kur |
-| `cargo not found` | `winget install Rustlang.Rustup` → terminali yeniden aç |
+|------|------|
+| Portlar görünmüyor | Admin olarak çalıştır |
+| Tray ikon yok | Sistem tepsisini kontrol et |
+| Kill sonrası port kalıyor | Refresh yap |
+| WebView2 hatası | Runtime kur |
+| cargo not found | Rust toolchain kur (winget install Rustlang.Rustup) |
 
 ---
 

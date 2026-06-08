@@ -36,33 +36,41 @@ Sistemdeki aktif TCP portlarını gerçek zamanlı listeleyen, gerektiğinde tek
 ### CLI ile Kaynak Koddan Kurulum
 
 #### Gereksinimler
-
+```
 node --version  
-rustup --version  
+rustup --version
+```
 
 Eksikse kur:
 
+```
 winget install OpenJS.NodeJS  
-winget install Rustlang.Rustup  
+winget install Rustlang.Rustup
+```
 
 ---
 
 ### Build Al ve Kur
 
+```
 git clone https://github.com/erdincdegirmenci/portly.git  
 cd portly  
 npm install  
 npm run tauri build  
-
+```
 ---
 
 ### Çıktılar
 
 NSIS Installer:
-src-tauri/target/release/bundle/nsis/portly_0.1.0_x64-setup.exe  
+```
+src-tauri/target/release/bundle/nsis/portly_0.1.0_x64-setup.exe
+```
 
 MSI:
-src-tauri/target/release/bundle/msi/portly_0.1.0_x64_en-US.msi  
+```
+src-tauri/target/release/bundle/msi/portly_0.1.0_x64_en-US.msi
+```
 
 Executable:
 src-tauri/target/release/portly.exe  
@@ -70,12 +78,13 @@ src-tauri/target/release/portly.exe
 ---
 
 ### Geliştirici Modu
-
+```
 git clone https://github.com/erdincdegirmenci/portly.git  
 cd portly  
 npm install  
 npm run tauri dev  
 
+```
 ---
 
 ## Kullanım

@@ -7,6 +7,8 @@ Sistemdeki aktif TCP portlarını gerçek zamanlı listeleyen, gerektiğinde tek
 ![License](https://img.shields.io/badge/license-MIT-green)
 
 ---
+<img width="380" height="498" alt="image" src="https://github.com/user-attachments/assets/be7c0f11-3386-409b-9351-7b7a4b537d73" />
+
 
 ## Özellikler
 

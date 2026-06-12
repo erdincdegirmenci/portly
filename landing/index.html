@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>portly — A lightweight TCP port manager for Windows</title>
+    <meta name="description" content="A lightweight Windows system tray app that lists active TCP ports in real time and lets you terminate processes with a single click.">
+    <link rel="icon" type="image/svg+xml" href="public/icon.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: #f5f7fa;
+            color: #2d3748;
+            line-height: 1.6;
+        }
+
+        a {
+            color: #0a84ff;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: linear-gradient(135deg, #e8f2ff 0%, #ffffff 100%);
+            border-radius: 0 0 2rem 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .logo {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 1.5rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #1c1c1e;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #4a5568;
+            max-width: 640px;
+            margin: 0 auto 1.5rem;
+        }
+
+        .badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #1c1c1e;
+            color: #fff;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.35rem 0.75rem;
+            border-radius: 999px;
+        }
+
+        .badge.accent {
+            background: #0a84ff;
+        }
+
+        .timeline {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            width: 4px;
+            background: #e2e8f0;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -2px;
+        }
+
+        .timeline-item {
+            padding: 2rem 0;
+            position: relative;
+            width: 50%;
+            margin-left: auto;
+        }
+
+        .timeline-item:nth-child(even) {
+            margin-left: 0;
+            margin-right: auto;
+        }
+
+        .timeline-content {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .timeline-content::before {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #0a84ff;
+            border-radius: 50%;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .timeline-item:nth-child(odd) .timeline-content::before {
+            left: -60px;
+        }
+
+        .timeline-item:nth-child(even) .timeline-content::before {
+            right: -60px;
+        }
+
+        .timeline-content h2 {
+            color: #1c1c1e;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .timeline-content p {
+            color: #4a5568;
+            margin-bottom: 1rem;
+        }
+
+        .timeline-content ol,
+        .timeline-content ul {
+            color: #4a5568;
+            padding-left: 1.25rem;
+        }
+
+        .timeline-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-content img {
+            width: 100%;
+            max-width: 360px;
+            border-radius: 0.75rem;
+            margin-top: 1rem;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 8px 24px rgba(28, 28, 30, 0.12);
+        }
+
+        .hint {
+            background: #fff8e6;
+            border-left: 4px solid #f5a623;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+            color: #744210;
+            margin-top: 0.5rem;
+        }
+
+        .action-list {
+            list-style: none;
+            padding-left: 0 !important;
+        }
+
+        .action-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        .action-list li:last-child {
+            border-bottom: none;
+        }
+
+        .action-icon {
+            flex-shrink: 0;
+            width: 2rem;
+            height: 2rem;
+            background: #edf2ff;
+            color: #0a84ff;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 4rem 0;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .feature-card h3 {
+            color: #1c1c1e;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card p {
+            color: #4a5568;
+        }
+
+        .cta {
+            text-align: center;
+            padding: 4rem 0;
+        }
+
+        .cta-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: #0a84ff;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+
+        .cta-button:hover {
+            background: #0066cc;
+            text-decoration: none;
+        }
+
+        .cta-button.secondary {
+            background: #1c1c1e;
+        }
+
+        .cta-button.secondary:hover {
+            background: #2c2c2e;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            background: #1c1c1e;
+            color: white;
+            margin-top: 4rem;
+        }
+
+        footer p {
+            margin-bottom: 0.25rem;
+        }
+
+        footer a {
+            color: #64b5ff;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .timeline::before {
+                left: 31px;
+            }
+
+            .timeline-item {
+                width: 100%;
+                padding-left: 70px;
+                padding-right: 25px;
+            }
+
+            .timeline-item:nth-child(even) {
+                margin-left: 0;
+            }
+
+            .timeline-content::before {
+                left: -60px !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="public/icon.svg" alt="portly Logo" class="logo">
+        <h1>portly</h1>
+        <p class="subtitle">
+            A lightweight Windows system tray app that lists active TCP ports in real time
+            and lets you terminate processes with a single click when needed.
+        </p>
+        <div class="badges">
+            <span class="badge">Windows 10 / 11</span>
+            <span class="badge accent">Tauri 2.x</span>
+            <span class="badge">MIT License</span>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <h2>1. Installation</h2>
+                    <p>To start using portly, follow these steps:</p>
+                    <ol>
+                        <li>
+                            Go to the <b>GitHub Releases</b> page:<br>
+                            <a href="https://github.com/erdincdegirmenci/portly/releases/tag/0.1.0" target="_blank" rel="noopener">Releases — portly v0.1.0</a>
+                        </li>
+                        <li>
+                            Download the <b>portly_0.1.0_x64-setup.zip</b> file and extract it.
+                        </li>
+                        <li>
+                            Run the installer, approve the UAC prompt, and complete the setup.
+                        </li>
+                    </ol>
+                    <div class="hint">
+                        <b>Run as Administrator</b> to see all system ports.
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <h2>2. Main Screen</h2>
+                    <p>
+                        When you open the app, active TCP ports are listed with process name and directory info.
+                        The footer shows the live port count.
+                    </p>
+                    <img
+                        src="https://github.com/user-attachments/assets/be7c0f11-3386-409b-9351-7b7a4b537d73"
+                        alt="portly Main Screen"
+                    >
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <h2>3. Search</h2>
+                    <p>
+                        Use the search bar at the top to instantly filter the list by port number,
+                        process name, or directory path.
+                    </p>
+                    <ul>
+                        <li>Port number: <code>:3000</code> or <code>3000</code></li>
+                        <li>Process name: <code>node</code>, <code>nginx</code></li>
+                        <li>Directory path: your project folder name</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <h2>4. Quick Actions</h2>
+                    <p>Each port row has three quick actions:</p>
+                    <ul class="action-list">
+                        <li>
+                            <span class="action-icon">&gt;_</span>
+                            <span><b>Open terminal</b> — Opens a terminal in the process directory.</span>
+                        </li>
+                        <li>
+                            <span class="action-icon">📁</span>
+                            <span><b>Open folder</b> — Shows the directory in Explorer.</span>
+                        </li>
+                        <li>
+                            <span class="action-icon">✕</span>
+                            <span><b>Kill process</b> — Terminates the process after confirmation.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <h2>5. Settings</h2>
+                    <p>
+                        Click the <b>Options</b> button in the bottom-left to change the refresh interval.
+                        The list updates automatically at your chosen interval.
+                    </p>
+                    <ul>
+                        <li>3 seconds — busy development environment</li>
+                        <li>5 seconds — default</li>
+                        <li>10 / 30 seconds — lower resource usage</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <h2>6. System Tray</h2>
+                    <p>
+                        portly runs in the background from the system tray without cluttering the taskbar.
+                        Left-click the tray icon to show or hide the window.
+                    </p>
+                    <div class="hint">
+                        If the tray icon is missing, check hidden icons in Windows system tray settings.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="features">
+            <div class="feature-card">
+                <h3>Real-Time List</h3>
+                <p>View active TCP ports instantly with process name and directory info.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Instant Search</h3>
+                <p>Quickly filter the list by port, process, or directory name.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Kill Processes</h3>
+                <p>Terminate stuck ports with a single click and confirmation screen.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Terminal & Explorer</h3>
+                <p>Open a terminal or show the folder in Explorer for any port.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Auto Refresh</h3>
+                <p>Automatic port scanning at 3s, 5s, 10s, or 30s intervals.</p>
+            </div>
+            <div class="feature-card">
+                <h3>System Tray</h3>
+                <p>Runs in the background without cluttering the taskbar.</p>
+            </div>
+        </div>
+
+        <div class="cta">
+            <div class="cta-buttons">
+                <a
+                    href="https://github.com/erdincdegirmenci/portly/releases/download/0.1.0/portly_0.1.0_x64-setup.zip"
+                    class="cta-button"
+                >Download (v0.1.0)</a>
+                <a
+                    href="https://github.com/erdincdegirmenci/portly"
+                    class="cta-button secondary"
+                    target="_blank"
+                    rel="noopener"
+                >View on GitHub</a>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>portly — TCP Port Manager for Windows</p>
+        <p>
+            <a href="https://github.com/erdincdegirmenci/portly" target="_blank" rel="noopener">GitHub</a>
+            · MIT License
+        </p>
+    </footer>
+</body>
+</html>
